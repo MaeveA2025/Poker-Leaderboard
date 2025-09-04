@@ -28,7 +28,12 @@ const { session } = Astro.props;
         Back to sessions
       </BackToPrev>
     </div>
-    <div class="space-y-1 my-10">
+    <article>
+      <p class="animate">
+        Session Players
+      </p>
+    </article>
+    <div>
       <div class="animate flex items-center gap-1.5">
         <LeaderBoard players={session.data.players} />
       </div>
