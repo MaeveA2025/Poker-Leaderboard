@@ -1,0 +1,37 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+import { SESSION } from "@consts";
+import LeaderBoard from "@components/LeaderBoard.astro";
+
+export async function getStaticPaths() {
+  const sessions = (await getCollection("sessions"))
+  return sessions.map((session) => ({
+    params: { slug: new Date(session.data.date).toLocaleDateString('en-US').replace(/\//g, "-")},
+    props: { session },
+  }));
+}
+
+interface Props {
+  session: CollectionEntry<'sessions'>;
+}
+
+const { session } = Astro.props;
+---
+
+<PageLayout title={SESSION.TITLE} description={SESSION.DESCRIPTION}>
+  <Container>
+    <div class="animate">
+      <BackToPrev href="/sessions">
+        Back to sessions
+      </BackToPrev>
+    </div>
+    <div class="space-y-1 my-10">
+      <div class="animate flex items-center gap-1.5">
+        <LeaderBoard players={session.data.players} />
+      </div>
+    </div>
+  </Container>
+</PageLayout>

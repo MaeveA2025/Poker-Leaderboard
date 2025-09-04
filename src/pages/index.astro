@@ -1,0 +1,62 @@
+---
+import { getCollection } from "astro:content";
+import Container from "@components/Container.astro";
+import PageLayout from "@layouts/PageLayout.astro";
+import ArrowCard from "@components/ArrowCard.astro";
+import Link from "@components/Link.astro";
+import { SITE, HOME } from "@consts";
+import LeaderBoard from "@components/LeaderBoard.astro";
+import type { CollectionEntry } from "astro:content";
+import type { Player } from "@api/Player";
+import { undefined } from "astro:schema";
+
+const sessions = await getCollection("sessions")
+
+function aggregateData(sessions: Array<CollectionEntry<"sessions">>) {
+  const playerTotals = new Map<string, Player>();
+  for (const session of sessions) {
+    for(const player of session.data.players) {
+      if (playerTotals.has(player.nickname)) {
+        const total = playerTotals.get(player.nickname)!
+        playerTotals.set(player.nickname, {
+          nickname: player.nickname,
+          net: player.net + total.net,
+          hourly_rate: (player.net + total.net) / (total.total_time_hours + player.total_time_hours),
+          total_time_hours: player.total_time_hours + total.total_time_hours,
+        } satisfies Player)
+      } else {
+        playerTotals.set(player.nickname, player)
+      }
+    }
+  }
+
+  const players = Array.from(playerTotals.values());
+  const sortedPlayers = players.sort((p1, p2) => p2.net - p1.net)
+  return sortedPlayers
+}
+
+const players = aggregateData(sessions)
+---
+
+<PageLayout title={HOME.TITLE} description={HOME.DESCRIPTION}>
+  <Container>
+    <h4 class="animate font-semibold text-black dark:text-white">
+      Poker Leaderboard <span class="text-xl"></span> 
+    </h4>
+    <div class="space-y-16">
+      <section>
+        <article class="space-y-4">
+          <p class="animate">
+            Current Runing Totals
+            <LeaderBoard players={players}/>
+          </p>
+        </article>
+      </section>
+
+      <section class="animate space-y-6">
+        <div class="flex flex-wrap gap-y-2 items-center justify-between">
+        </div>
+      </section>
+    </div>
+  </Container>
+</PageLayout>

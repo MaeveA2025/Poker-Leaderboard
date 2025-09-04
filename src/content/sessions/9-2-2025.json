@@ -1,0 +1,53 @@
+{
+    "date": "9-2-2025",
+    "players": [
+        {
+            "nickname": "Conceit",
+            "net": 130.41,
+            "total_time_hours": 2.67,
+            "hourly_rate": 48.84
+        },
+        {
+            "nickname": "Maeve",
+            "net": 30.58,
+            "total_time_hours": 2.6,
+            "hourly_rate": 11.76
+        },
+        {
+            "nickname": "Ethan",
+            "net": -3.4,
+            "total_time_hours": 2.2800000000000002,
+            "hourly_rate": -1.49
+        },
+        {
+            "nickname": "Gio",
+            "net": -9.59,
+            "total_time_hours": 1.96,
+            "hourly_rate": -4.89
+        },
+        {
+            "nickname": "Venus",
+            "net": -30.0,
+            "total_time_hours": 2.5300000000000002,
+            "hourly_rate": -11.86
+        },
+        {
+            "nickname": "Tsunami",
+            "net": -33.0,
+            "total_time_hours": 2.61,
+            "hourly_rate": -12.64
+        },
+        {
+            "nickname": "itsronde",
+            "net": -40.0,
+            "total_time_hours": 0.73,
+            "hourly_rate": -54.79
+        },
+        {
+            "nickname": "Waxy",
+            "net": -45.0,
+            "total_time_hours": 0.78,
+            "hourly_rate": -57.69
+        }
+    ]
+}

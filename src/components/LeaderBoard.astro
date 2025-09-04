@@ -1,0 +1,30 @@
+---
+import type { Player } from '@api/Player';
+
+interface Props {
+    players: Array<Player>;
+}
+
+const { players } = Astro.props;
+---
+
+<table class="table-auto w-full shadow-md mt-5 rounded-lg border-2 border-black/15 dark:border-white/20">
+    <thead>
+        <tr class="border-2 border-black/15 dark:border-white/20">
+            <th class="p-4 text-left">Player</th>
+            <th class="p-4 text-right">Time Played</th>
+            <th class="p-4 text-right">Net</th>
+            <th class="p-4 text-right">Hourly Rate</th>
+        </tr>
+    </thead>
+    <tbody>
+        {players.map((player) => (
+            <tr class="rounded-lg border border-black/15 dark:border-white/20"> 
+                <td class="p-4">{player.nickname}</td>
+                <td class="p-4 text-right">{player.total_time_hours.toFixed(2)} hrs</td>
+                <td class={`p-4 text-right ${player.net >= 0 ? "text-green-400" : "text-red-400"}`}>{player.net.toFixed(2)}$</td>                
+                <td class={`p-4 text-right ${player.hourly_rate >= 0 ? 'text-green-400' : 'text-red-400'}`}>{player.hourly_rate.toFixed(2)}$/hr</td>
+            </tr>
+        ))}
+    </tbody>
+</table>
