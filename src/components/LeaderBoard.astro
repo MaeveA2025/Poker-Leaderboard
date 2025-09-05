@@ -8,13 +8,25 @@ interface Props {
 const { players } = Astro.props;
 ---
 
-<table class="table-auto w-full shadow-md mt-5 rounded-lg border-2 border-black/15 dark:border-white/20">
+<table id="playerTable" class="table-auto w-full shadow-md mt-5 rounded-lg border-2 border-black/15 dark:border-white/20">
     <thead>
         <tr class="border-2 border-black/15 dark:border-white/20">
-            <th class="p-4 text-left">Player</th>
-            <th class="p-4 text-right">Time Played</th>
-            <th class="p-4 text-right">Net</th>
-            <th class="p-4 text-right">Hourly Rate</th>
+            <th class="p-4 text-left">
+                Player
+                <button class="caret-btn">▼</button>
+            </th>
+            <th class="p-4 text-right">
+                Time Played
+                <button class="caret-btn">▼</button>
+            </th>
+            <th class="p-4 text-right">
+                Net
+                <button class="caret-btn">▼</button>
+            </th>
+            <th class="p-4 text-right">
+                Hourly Rate
+                <button class="caret-btn">▼</button>
+            </th>
         </tr>
     </thead>
     <tbody>
