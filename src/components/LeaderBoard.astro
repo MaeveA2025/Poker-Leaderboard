@@ -13,23 +13,23 @@ const { players } = Astro.props;
         <tr class="border-2 border-black/15 dark:border-white/20">
             <th class="p-4 text-left">
                 Player
-                <button class="caret-btn">▼</button>
+                <button class="caret-btn" data-key="nickname">▼</button>
             </th>
             <th class="p-4 text-right">
                 Time Played
-                <button class="caret-btn">▼</button>
+                <button class="caret-btn" data-key="time">▼</button>
             </th>
             <th class="p-4 text-right">
                 Net
-                <button class="caret-btn">▼</button>
+                <button class="caret-btn" data-key="net">▼</button>
             </th>
             <th class="p-4 text-right">
                 Hourly Rate
-                <button class="caret-btn">▼</button>
+                <button class="caret-btn" data-key="hourly">▼</button>
             </th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="playerTableBody">
         {players.map((player) => (
             <tr class="rounded-lg border border-black/15 dark:border-white/20"> 
                 <td class="p-4">{player.nickname}</td>
@@ -40,3 +40,65 @@ const { players } = Astro.props;
         ))}
     </tbody>
 </table>
+
+<script>
+    const tableBody = document.getElementById("playerTableBody") as HTMLTableSectionElement
+    const carets = document.querySelectorAll<HTMLButtonElement>(".caret-btn")
+
+    interface SortingState {
+        key: string | null;
+        asc: boolean
+    }
+
+    const currentSort: SortingState = { key: null, asc: true}
+
+    carets.forEach((button) => {
+        button.addEventListener("click", () => {
+            const key = button.dataset.key; // gets the column name
+            if (!key) return;
+
+            if (currentSort.key === key) { 
+                currentSort.asc = !currentSort.asc; // flip direction if current column is same as what the leaderboard is currently being sorted by 
+            } else {
+                currentSort.key = key; // if the sort we have is different from what the leaderboard is currently sorting by then flip that caret and reset all others
+                currentSort.asc = true; // default to asc
+            }
+    
+            carets.forEach(b => b.textContent = "▼")
+
+            button.textContent = currentSort.asc ? "▼" : "▲" // flip current caret
+
+            const rows = Array.from(tableBody.querySelectorAll<HTMLTableRowElement>("tr"))
+            rows.sort((a, b) => {
+                const aVal = extractValue(a, key)
+                const bVal = extractValue(b, key)
+
+                if (typeof aVal === "number" && typeof bVal === "number") {
+                    if (currentSort.asc) {
+                        return aVal - bVal
+                    } else {
+                        return bVal - aVal
+                    }
+                } else {
+                    if (currentSort.asc) {
+                        return String(aVal).localeCompare(String(bVal))
+                    } else {
+                        return String(bVal).localeCompare(String(aVal))
+                    }
+                }
+            })
+
+            rows.forEach(row => tableBody.appendChild(row))
+        })
+    })
+
+    function extractValue(row: HTMLTableRowElement, key: string): string | number {
+        switch(key) {
+            case "nickname": return row.children[0].textContent?.trim() ?? "";
+            case "time": return parseFloat(row.children[1].textContent ?? "0")
+            case "net": return parseFloat(row.children[2].textContent ?? "0")
+            case "hourly": return parseFloat(row.children[3].textContent ?? "0")
+            default: return ""
+        }
+    }
+</script>
