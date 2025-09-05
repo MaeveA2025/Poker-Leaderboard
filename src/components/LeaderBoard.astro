@@ -13,19 +13,19 @@ const { players } = Astro.props;
         <tr class="border-2 border-black/15 dark:border-white/20">
             <th class="p-4 text-left">
                 Player
-                <button class="caret-btn" data-key="nickname">▼</button>
+                <button class="caret-btn" data-key="nickname"><span class="caret">▼</span></button>
             </th>
             <th class="p-4 text-right">
                 Time Played
-                <button class="caret-btn" data-key="time">▼</button>
+                <button class="caret-btn" data-key="time"><span class="caret">▼</span></button>
             </th>
             <th class="p-4 text-right">
                 Net
-                <button class="caret-btn" data-key="net">▼</button>
+                <button class="caret-btn" data-key="net"><span class="caret">▼</span></button>
             </th>
             <th class="p-4 text-right">
                 Hourly Rate
-                <button class="caret-btn" data-key="hourly">▼</button>
+                <button class="caret-btn" data-key="hourly"><span class="caret">▼</span></button>
             </th>
         </tr>
     </thead>
@@ -64,9 +64,17 @@ const { players } = Astro.props;
                 currentSort.asc = true; // default to asc
             }
     
-            carets.forEach(b => b.textContent = "▼")
+            carets.forEach(button => {
+                const caret = button.querySelector<HTMLSpanElement>('.caret')
+                if (caret) {
+                    caret.classList.remove("flipped")
+                }
+            })
 
-            button.textContent = currentSort.asc ? "▼" : "▲" // flip current caret
+            const caret = button.querySelector<HTMLSpanElement>('.caret')
+            if (caret) {
+                caret.classList.toggle("flipped", !currentSort.asc)
+            }
 
             const rows = Array.from(tableBody.querySelectorAll<HTMLTableRowElement>("tr"))
             rows.sort((a, b) => {
@@ -102,3 +110,13 @@ const { players } = Astro.props;
         }
     }
 </script>
+
+<style>
+    .caret {
+        display: inline-block;
+        transition: transform 0.2s ease;
+    }
+    .caret.flipped {
+        transform: rotate(180deg);
+    }
+</style>
