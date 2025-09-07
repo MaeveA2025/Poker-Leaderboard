@@ -86,18 +86,17 @@ const { players } = Astro.props;
 
                 const caret = button.querySelector(".caret");
 
-                carets.forEach((btn) => { 
-                    const caret = btn.querySelector('.caret')
+                carets.forEach((btn) => {
+                    const caret = btn.querySelector(".caret");
                     if (caret) {
-                        caret.classList.remove("flipped", "active")
+                        caret.classList.remove("flipped", "active");
                     }
                 });
-                
+
                 if (caret) {
                     caret.classList.toggle("flipped", !currentSort.asc);
-                    caret.classList.add("active")
+                    caret.classList.add("active");
                 }
-                
 
                 const rows = Array.from(tableBody.querySelectorAll("tr"));
                 rows.sort((a, b) => {
