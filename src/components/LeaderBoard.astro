@@ -94,7 +94,7 @@ const { players } = Astro.props;
                 });
 
                 if (caret) {
-                    caret.classList.toggle("flipped", !currentSort.asc);
+                    caret.classList.toggle("flipped", currentSort.asc);
                     caret.classList.add("active");
                 }
 
