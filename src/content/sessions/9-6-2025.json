@@ -1,0 +1,41 @@
+{
+    "date": "9-6-2025",
+    "players": [
+      {
+        "nickname": "Maeve",
+        "net": 47.34,
+        "total_time_hours": 1.45,
+        "hourly_rate": 32.65
+      },
+      {
+        "nickname": "Zachhhh",
+        "net": 32.53,
+        "total_time_hours": 1.16,
+        "hourly_rate": 28.04
+      },
+      {
+        "nickname": "Gio",
+        "net": -0.46,
+        "total_time_hours": 1.4100000000000001,
+        "hourly_rate": -0.33
+      },
+      {
+        "nickname": "Tsunami",
+        "net": -15.0,
+        "total_time_hours": 1.07,
+        "hourly_rate": -14.02
+      },
+      {
+        "nickname": "Venus",
+        "net": -20.57,
+        "total_time_hours": 1.4100000000000001,
+        "hourly_rate": -14.59
+      },
+      {
+        "nickname": "Conceit",
+        "net": -43.84,
+        "total_time_hours": 1.42,
+        "hourly_rate": -30.87
+      }
+    ]
+  }
