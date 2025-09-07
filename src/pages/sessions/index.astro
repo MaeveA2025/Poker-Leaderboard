@@ -5,7 +5,9 @@ import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 import { SESSION } from "@consts";
 
-const sessions = await getCollection("sessions");
+const sessions = (await getCollection("sessions")).sort((a, b) => {
+  return new Date (b.data.date).getTime() - new Date (a.data.date).getTime()
+});
 ---
 
 <PageLayout title={SESSION.TITLE} description={SESSION.DESCRIPTION}>
@@ -32,3 +34,4 @@ const sessions = await getCollection("sessions");
     </div>
   </Container>
 </PageLayout>
+
