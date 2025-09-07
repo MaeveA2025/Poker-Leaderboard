@@ -1,5 +1,5 @@
 ---
-import type { Player } from '@api/Player';
+import type { Player } from "@api/Player";
 
 interface Props {
     players: Array<Player>;
@@ -8,115 +8,143 @@ interface Props {
 const { players } = Astro.props;
 ---
 
-<table id="playerTable" class="table-auto w-full shadow-md mt-5 rounded-lg border-2 border-black/15 dark:border-white/20">
+<table
+    id="playerTable"
+    class="table-auto w-full shadow-md mt-5 rounded-lg border-2 border-black/15 dark:border-white/20"
+>
     <thead>
         <tr class="border-2 border-black/15 dark:border-white/20">
             <th class="p-4 text-left">
                 Player
-                <button class="caret-btn" data-key="nickname"><span class="caret">▼</span></button>
+                <button class="caret-btn" data-key="nickname"
+                    ><span class="caret">▼</span></button
+                >
             </th>
             <th class="p-4 text-right">
                 Time Played
-                <button class="caret-btn" data-key="time"><span class="caret">▼</span></button>
+                <button class="caret-btn" data-key="time"
+                    ><span class="caret">▼</span></button
+                >
             </th>
             <th class="p-4 text-right">
                 Net
-                <button class="caret-btn" data-key="net"><span class="caret">▼</span></button>
+                <button class="caret-btn" data-key="net"
+                    ><span class="caret">▼</span></button
+                >
             </th>
             <th class="p-4 text-right">
                 Hourly Rate
-                <button class="caret-btn" data-key="hourly"><span class="caret">▼</span></button>
+                <button class="caret-btn" data-key="hourly"
+                    ><span class="caret">▼</span></button
+                >
             </th>
         </tr>
     </thead>
     <tbody id="playerTableBody">
-        {players.map((player) => (
-            <tr class="rounded-lg border border-black/15 dark:border-white/20"> 
-                <td class="p-4">{player.nickname}</td>
-                <td class="p-4 text-right">{player.total_time_hours.toFixed(2)} hrs</td>
-                <td class={`p-4 text-right ${player.net >= 0 ? "text-green-400" : "text-red-400"}`}>{player.net.toFixed(2)}$</td>                
-                <td class={`p-4 text-right ${player.hourly_rate >= 0 ? 'text-green-400' : 'text-red-400'}`}>{player.hourly_rate.toFixed(2)}$/hr</td>
-            </tr>
-        ))}
+        {
+            players.map((player) => (
+                <tr class="rounded-lg border border-black/15 dark:border-white/20">
+                    <td class="p-4">{player.nickname}</td>
+                    <td class="p-4 text-right">
+                        {player.total_time_hours.toFixed(2)} hrs
+                    </td>
+                    <td
+                        class={`p-4 text-right ${player.net >= 0 ? "text-green-400" : "text-red-400"}`}
+                    >
+                        {player.net.toFixed(2)}$
+                    </td>
+                    <td
+                        class={`p-4 text-right ${player.hourly_rate >= 0 ? "text-green-400" : "text-red-400"}`}
+                    >
+                        {player.hourly_rate.toFixed(2)}$/hr
+                    </td>
+                </tr>
+            ))
+        }
     </tbody>
 </table>
 
-<script>
-    const tableBody = document.getElementById("playerTableBody") as HTMLTableSectionElement
-    const carets = document.querySelectorAll<HTMLButtonElement>(".caret-btn")
+<script is:inline>
+    function initLeader() {
+        const tableBody = document.getElementById("playerTableBody");
+        if (!tableBody) return;
 
-    interface SortingState {
-        key: string | null;
-        asc: boolean
-    }
+        const carets = document.querySelectorAll(".caret-btn");
+        const currentSort = { key: null, asc: true };
 
-    const currentSort: SortingState = { key: null, asc: true}
+        carets.forEach((button) => {
+            button.addEventListener("click", () => {
+                const key = button.dataset.key;
+                if (!key) return;
 
-    carets.forEach((button) => {
-        button.addEventListener("click", () => {
-            const key = button.dataset.key; // gets the column name
-            if (!key) return;
-
-            if (currentSort.key === key) { 
-                currentSort.asc = !currentSort.asc; // flip direction if current column is same as what the leaderboard is currently being sorted by 
-            } else {
-                currentSort.key = key; // if the sort we have is different from what the leaderboard is currently sorting by then flip that caret and reset all others
-                currentSort.asc = true; // default to asc
-            }
-    
-            carets.forEach(button => {
-                const caret = button.querySelector<HTMLSpanElement>('.caret')
-                if (caret) {
-                    caret.classList.remove("flipped")
-                }
-            })
-
-            const caret = button.querySelector<HTMLSpanElement>('.caret')
-            if (caret) {
-                caret.classList.toggle("flipped", !currentSort.asc)
-            }
-
-            const rows = Array.from(tableBody.querySelectorAll<HTMLTableRowElement>("tr"))
-            rows.sort((a, b) => {
-                const aVal = extractValue(a, key)
-                const bVal = extractValue(b, key)
-
-                if (typeof aVal === "number" && typeof bVal === "number") {
-                    if (currentSort.asc) {
-                        return aVal - bVal
-                    } else {
-                        return bVal - aVal
-                    }
+                if (currentSort.key === key) {
+                    currentSort.asc = !currentSort.asc;
                 } else {
-                    if (currentSort.asc) {
-                        return String(aVal).localeCompare(String(bVal))
-                    } else {
-                        return String(bVal).localeCompare(String(aVal))
-                    }
+                    currentSort.key = key;
+                    currentSort.asc = true;
                 }
-            })
 
-            rows.forEach(row => tableBody.appendChild(row))
-        })
-    })
+                const caret = button.querySelector(".caret");
 
-    function extractValue(row: HTMLTableRowElement, key: string): string | number {
-        switch(key) {
-            case "nickname": return row.children[0].textContent?.trim() ?? "";
-            case "time": return parseFloat(row.children[1].textContent ?? "0")
-            case "net": return parseFloat(row.children[2].textContent ?? "0")
-            case "hourly": return parseFloat(row.children[3].textContent ?? "0")
-            default: return ""
+                carets.forEach((btn) => { 
+                    const caret = btn.querySelector('.caret')
+                    if (caret) {
+                        caret.classList.remove("flipped", "active")
+                    }
+                });
+                
+                if (caret) {
+                    caret.classList.toggle("flipped", !currentSort.asc);
+                    caret.classList.add("active")
+                }
+                
+
+                const rows = Array.from(tableBody.querySelectorAll("tr"));
+                rows.sort((a, b) => {
+                    const aVal = extractValue(a, key);
+                    const bVal = extractValue(b, key);
+                    if (typeof aVal === "number" && typeof bVal === "number") {
+                        return currentSort.asc ? aVal - bVal : bVal - aVal;
+                    } else {
+                        return currentSort.asc
+                            ? String(aVal).localeCompare(String(bVal))
+                            : String(bVal).localeCompare(String(aVal));
+                    }
+                });
+
+                rows.forEach((row) => tableBody.appendChild(row));
+            });
+        });
+
+        function extractValue(row, key) {
+            switch (key) {
+                case "nickname":
+                    return row.children[0].textContent?.trim() ?? "";
+                case "time":
+                    return parseFloat(row.children[1].textContent ?? "0");
+                case "net":
+                    return parseFloat(row.children[2].textContent ?? "0");
+                case "hourly":
+                    return parseFloat(row.children[3].textContent ?? "0");
+                default:
+                    return "";
+            }
         }
     }
+
+    document.addEventListener("astro:page-load", initLeader);
 </script>
 
 <style>
     .caret {
         display: inline-block;
         transition: transform 0.2s ease;
+        opacity: 0.4;
     }
     .caret.flipped {
         transform: rotate(180deg);
+    }
+    .caret.active {
+        opacity: 1;
     }
 </style>
