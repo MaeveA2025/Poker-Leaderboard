@@ -1,5 +1,5 @@
 ---
-import type { Player } from '@api/Player';
+import type { Player } from "@api/Player";
 
 interface Props {
     players: Array<Player>;
@@ -8,23 +8,142 @@ interface Props {
 const { players } = Astro.props;
 ---
 
-<table class="table-auto w-full shadow-md mt-5 rounded-lg border-2 border-black/15 dark:border-white/20">
+<table
+    id="playerTable"
+    class="table-auto w-full shadow-md mt-5 rounded-lg border-2 border-black/15 dark:border-white/20"
+>
     <thead>
         <tr class="border-2 border-black/15 dark:border-white/20">
-            <th class="p-4 text-left">Player</th>
-            <th class="p-4 text-right">Time Played</th>
-            <th class="p-4 text-right">Net</th>
-            <th class="p-4 text-right">Hourly Rate</th>
+            <th class="p-4 text-left">
+                Player
+                <button class="caret-btn" data-key="nickname"
+                    ><span class="caret">▼</span></button
+                >
+            </th>
+            <th class="p-4 text-right">
+                Time Played
+                <button class="caret-btn" data-key="time"
+                    ><span class="caret">▼</span></button
+                >
+            </th>
+            <th class="p-4 text-right">
+                Net
+                <button class="caret-btn" data-key="net"
+                    ><span class="caret">▼</span></button
+                >
+            </th>
+            <th class="p-4 text-right">
+                Hourly Rate
+                <button class="caret-btn" data-key="hourly"
+                    ><span class="caret">▼</span></button
+                >
+            </th>
         </tr>
     </thead>
-    <tbody>
-        {players.map((player) => (
-            <tr class="rounded-lg border border-black/15 dark:border-white/20"> 
-                <td class="p-4">{player.nickname}</td>
-                <td class="p-4 text-right">{player.total_time_hours.toFixed(2)} hrs</td>
-                <td class={`p-4 text-right ${player.net >= 0 ? "text-green-400" : "text-red-400"}`}>{player.net.toFixed(2)}$</td>                
-                <td class={`p-4 text-right ${player.hourly_rate >= 0 ? 'text-green-400' : 'text-red-400'}`}>{player.hourly_rate.toFixed(2)}$/hr</td>
-            </tr>
-        ))}
+    <tbody id="playerTableBody">
+        {
+            players.map((player) => (
+                <tr class="rounded-lg border border-black/15 dark:border-white/20">
+                    <td class="p-4">{player.nickname}</td>
+                    <td class="p-4 text-right">
+                        {player.total_time_hours.toFixed(2)} hrs
+                    </td>
+                    <td
+                        class={`p-4 text-right ${player.net >= 0 ? "text-green-400" : "text-red-400"}`}
+                    >
+                        {player.net.toFixed(2)}$
+                    </td>
+                    <td
+                        class={`p-4 text-right ${player.hourly_rate >= 0 ? "text-green-400" : "text-red-400"}`}
+                    >
+                        {player.hourly_rate.toFixed(2)}$/hr
+                    </td>
+                </tr>
+            ))
+        }
     </tbody>
 </table>
+
+<script is:inline>
+    function initLeader() {
+        const tableBody = document.getElementById("playerTableBody");
+        if (!tableBody) return;
+
+        const carets = document.querySelectorAll(".caret-btn");
+        const currentSort = { key: null, asc: true };
+
+        carets.forEach((button) => {
+            button.addEventListener("click", () => {
+                const key = button.dataset.key;
+                if (!key) return;
+
+                if (currentSort.key === key) {
+                    currentSort.asc = !currentSort.asc;
+                } else {
+                    currentSort.key = key;
+                    currentSort.asc = true;
+                }
+
+                const caret = button.querySelector(".caret");
+
+                carets.forEach((btn) => {
+                    const caret = btn.querySelector(".caret");
+                    if (caret) {
+                        caret.classList.remove("flipped", "active");
+                    }
+                });
+
+                if (caret) {
+                    caret.classList.toggle("flipped", currentSort.asc);
+                    caret.classList.add("active");
+                }
+
+                const rows = Array.from(tableBody.querySelectorAll("tr"));
+                rows.sort((a, b) => {
+                    const aVal = extractValue(a, key);
+                    const bVal = extractValue(b, key);
+                    if (typeof aVal === "number" && typeof bVal === "number") {
+                        return currentSort.asc ? aVal - bVal : bVal - aVal;
+                    } else {
+                        return currentSort.asc
+                            ? String(aVal).localeCompare(String(bVal))
+                            : String(bVal).localeCompare(String(aVal));
+                    }
+                });
+
+                rows.forEach((row) => tableBody.appendChild(row));
+            });
+        });
+
+        function extractValue(row, key) {
+            switch (key) {
+                case "nickname":
+                    return row.children[0].textContent?.trim() ?? "";
+                case "time":
+                    return parseFloat(row.children[1].textContent ?? "0");
+                case "net":
+                    return parseFloat(row.children[2].textContent ?? "0");
+                case "hourly":
+                    return parseFloat(row.children[3].textContent ?? "0");
+                default:
+                    return "";
+            }
+        }
+    }
+
+    document.addEventListener("astro:page-load", initLeader);
+</script>
+
+<style>
+    .caret {
+        display: inline-block;
+        transition: transform 0.2s ease;
+        opacity: 0.4;
+    }
+    .caret.flipped {
+        transform: rotate(180deg);
+    }
+    .caret.active {
+        opacity: 1;
+    }
+</style>
